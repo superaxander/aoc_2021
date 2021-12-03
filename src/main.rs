@@ -15,7 +15,7 @@ mod day1;
 // mod day15;
 // mod day16;
 mod day2;
-// mod day3;
+mod day3;
 // mod day4;
 // mod day5;
 // mod day6;
@@ -28,7 +28,7 @@ fn main() {
     let now = Instant::now();
     Day::Combined(day1::main).run("day 1");
     Day::Combined(day2::main).run("day 2");
-    // Day::SeparatedLong(day3::main).run("day 3");
+    Day::SeparatedUsize(day3::main).run("day 3");
     // Day::Separated(day4::main).run("day 4");
     // Day::Separated(day5::main).run("day 5");
     // Day::SeparatedUsize(day6::main).run("day 6");
