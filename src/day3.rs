@@ -22,12 +22,8 @@ fn part_a() -> io::Result<usize> {
         let mut i = 0;
         for c in line.chars() {
             match c {
-                '1' => {
-                    ones[i] += 1;
-                }
-                '0' => {
-                    zeroes[i] += 1;
-                }
+                '1' => ones[i] += 1,
+                '0' => zeroes[i] += 1,
                 _ => debug!("error in input invalid character: {}", c)
             }
             i += 1;
@@ -58,7 +54,7 @@ fn part_b() -> io::Result<usize> {
     for line in lines {
         let line = line?;
         let line = line.trim();
-        
+
         let mut num = 0;
         for c in line.chars() {
             match c {
@@ -78,9 +74,9 @@ fn part_b() -> io::Result<usize> {
         let shift_param = length - i - 1;
 
         if is_zero_most_common(&oxygen_nums, shift_param) {
-            oxygen_nums.retain(|n| (n.shr(shift_param) & 0b1) == 0);
+            oxygen_nums.retain(|n| ((n >> shift_param) & 0b1) == 0);
         } else {
-            oxygen_nums.retain(|n| (n.shr(shift_param) & 0b1) == 1);
+            oxygen_nums.retain(|n| ((n >> shift_param) & 0b1) == 1);
         }
 
         if oxygen_nums.len() == 1 {
@@ -91,9 +87,9 @@ fn part_b() -> io::Result<usize> {
         }
 
         if is_zero_most_common(&scrubber_nums, shift_param) {
-            scrubber_nums.retain(|n| (n.shr(shift_param) & 0b1) == 1);
+            scrubber_nums.retain(|n| ((n >> shift_param) & 0b1) == 1);
         } else {
-            scrubber_nums.retain(|n| (n.shr(shift_param) & 0b1) == 0);
+            scrubber_nums.retain(|n| ((n >> shift_param) & 0b1) == 0);
         }
 
         if scrubber_nums.len() == 1 {
@@ -112,7 +108,7 @@ fn is_zero_most_common(nums: &Vec<i32>, shift_param: usize) -> bool {
     let mut ones = 0;
 
     for n in nums {
-        if (n.shr(shift_param) & 1) == 0 {
+        if ((n >> shift_param) & 0b1) == 0 {
             zeroes += 1;
         } else {
             ones += 1;
