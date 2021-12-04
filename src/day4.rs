@@ -1,7 +1,5 @@
 use std::io;
 
-use regex::internal::Input;
-
 use crate::common;
 
 fn check_row(board: &Vec<i32>, row: usize) -> bool {

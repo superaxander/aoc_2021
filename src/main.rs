@@ -27,9 +27,9 @@ mod day4;
 fn main() {
     pretty_env_logger::init();
     let now = Instant::now();
-    // Day::Combined(day1::main).run("day 1");
-    // Day::Combined(day2::main).run("day 2");
-    // Day::SeparatedUsize(day3::main).run("day 3");
+    Day::Combined(day1::main).run("day 1");
+    Day::Combined(day2::main).run("day 2");
+    Day::SeparatedUsize(day3::main).run("day 3");
     Day::Combined(day4::main).run("day 4");
     // Day::Separated(day5::main).run("day 5");
     // Day::SeparatedUsize(day6::main).run("day 6");
