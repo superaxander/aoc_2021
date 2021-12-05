@@ -27,10 +27,13 @@ pub fn main() -> io::Result<(i32, i32)> {
                     depth += x;
                     aim += x;
                 }
-                _ => error!("Invalid input")
+                _ => error!("Invalid input"),
             }
         }
-    };
+    }
 
-    return Ok((horizontal_position * depth, horizontal_position * depth_adjusted));
+    return Ok((
+        horizontal_position * depth,
+        horizontal_position * depth_adjusted,
+    ));
 }

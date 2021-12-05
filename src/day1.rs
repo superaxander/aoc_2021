@@ -26,7 +26,7 @@ pub fn main() -> io::Result<(i32, i32)> {
             } else {
                 sums.push(num)
             }
-            
+
             last_number = num;
         }
     }

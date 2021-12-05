@@ -39,7 +39,14 @@ pub fn main() -> io::Result<(i32, i32)> {
                 boards.push(current_board.clone());
                 current_board.clear();
             } else {
-                current_board.append(&mut line.split(" ").map(|x| x.trim()).filter(|x| !x.is_empty()).map(|x| x.trim().parse().unwrap()).collect());
+                current_board.append(
+                    &mut line
+                        .split(" ")
+                        .map(|x| x.trim())
+                        .filter(|x| !x.is_empty())
+                        .map(|x| x.trim().parse().unwrap())
+                        .collect(),
+                );
             }
         } else {
             nums = line.split(",").map(|x| x.parse().unwrap()).collect();
@@ -50,25 +57,23 @@ pub fn main() -> io::Result<(i32, i32)> {
     boards.push(current_board.clone());
 
     for num in nums {
-        boards.retain_mut(|board|
-            {
-                for (i, n) in board.iter_mut().enumerate() {
-                    if *n == num {
-                        *n = -1;
-                        if check_row(board, i / 5) || check_column(board, i % 5) {
-                            if solution_a == -1 {
-                                solution_a = board.iter().filter(|x| **x != -1).sum::<i32>() * num;
-                            } else {
-                                solution_b = board.iter().filter(|x| **x != -1).sum::<i32>() * num;
-                            }
-                            return false;
+        boards.retain_mut(|board| {
+            for (i, n) in board.iter_mut().enumerate() {
+                if *n == num {
+                    *n = -1;
+                    if check_row(board, i / 5) || check_column(board, i % 5) {
+                        if solution_a == -1 {
+                            solution_a = board.iter().filter(|x| **x != -1).sum::<i32>() * num;
+                        } else {
+                            solution_b = board.iter().filter(|x| **x != -1).sum::<i32>() * num;
                         }
-                        break;
+                        return false;
                     }
+                    break;
                 }
-                return true;
             }
-        );
+            return true;
+        });
     }
 
     return Ok((solution_a, solution_b));

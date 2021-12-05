@@ -24,7 +24,7 @@ fn part_a() -> io::Result<usize> {
             match c {
                 '1' => ones[i] += 1,
                 '0' => zeroes[i] += 1,
-                _ => debug!("error in input invalid character: {}", c)
+                _ => debug!("error in input invalid character: {}", c),
             }
             i += 1;
         }
@@ -60,7 +60,7 @@ fn part_b() -> io::Result<usize> {
             match c {
                 '1' => num = 1 + num * 2,
                 '0' => num = num * 2,
-                _ => debug!("error in input invalid character: {}", c)
+                _ => debug!("error in input invalid character: {}", c),
             }
         }
         length = line.len();
@@ -118,11 +118,6 @@ fn is_zero_most_common(nums: &Vec<i32>, shift_param: usize) -> bool {
     zeroes > ones
 }
 
-
 pub fn main(do_b: bool) -> io::Result<usize> {
-    return if do_b {
-        part_b()
-    } else {
-        part_a()
-    };
+    return if do_b { part_b() } else { part_a() };
 }
