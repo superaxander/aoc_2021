@@ -3,8 +3,9 @@
 extern crate log;
 extern crate pretty_env_logger;
 
-use common::{Day, Runnable};
 use std::time::Instant;
+
+use common::{Day, Runnable};
 
 mod common;
 mod day1;

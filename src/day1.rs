@@ -39,5 +39,5 @@ pub fn main() -> io::Result<(i32, i32)> {
         last_number = sum;
     }
 
-    return Ok((solution_a, solution_b));
+    Ok((solution_a, solution_b))
 }

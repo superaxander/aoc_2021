@@ -12,7 +12,7 @@ pub fn main() -> io::Result<(i32, i32)> {
 
     for line in lines {
         let line = line?;
-        let split: Vec<&str> = line.trim().split(" ").collect();
+        let split: Vec<&str> = line.trim().split(' ').collect();
         if let Ok(x) = split[1].parse::<i32>() {
             match split[0] {
                 "forward" => {
@@ -32,8 +32,8 @@ pub fn main() -> io::Result<(i32, i32)> {
         }
     }
 
-    return Ok((
+    Ok((
         horizontal_position * depth,
         horizontal_position * depth_adjusted,
-    ));
+    ))
 }

@@ -2,22 +2,22 @@ use std::io;
 
 use crate::common;
 
-fn check_row(board: &Vec<i32>, row: usize) -> bool {
+fn check_row(board: &[i32], row: usize) -> bool {
     for col in 0..5 {
         if board[row * 5 + col] != -1 {
             return false;
         }
     }
-    return true;
+    true
 }
 
-fn check_column(board: &Vec<i32>, col: usize) -> bool {
+fn check_column(board: &[i32], col: usize) -> bool {
     for row in 0..5 {
         if board[row * 5 + col] != -1 {
             return false;
         }
     }
-    return true;
+    true
 }
 
 pub fn main() -> io::Result<(i32, i32)> {
@@ -35,13 +35,13 @@ pub fn main() -> io::Result<(i32, i32)> {
         let line = line?;
         let line = line.trim();
         if first_line_parsed {
-            if line.is_empty() && current_board.len() > 0 {
+            if line.is_empty() && !current_board.is_empty() {
                 boards.push(current_board.clone());
                 current_board.clear();
             } else {
                 current_board.append(
                     &mut line
-                        .split(" ")
+                        .split(' ')
                         .map(|x| x.trim())
                         .filter(|x| !x.is_empty())
                         .map(|x| x.trim().parse().unwrap())
@@ -49,7 +49,7 @@ pub fn main() -> io::Result<(i32, i32)> {
                 );
             }
         } else {
-            nums = line.split(",").map(|x| x.parse().unwrap()).collect();
+            nums = line.split(',').map(|x| x.parse().unwrap()).collect();
             first_line_parsed = true;
         }
     }
@@ -72,9 +72,9 @@ pub fn main() -> io::Result<(i32, i32)> {
                     break;
                 }
             }
-            return true;
+            true
         });
     }
 
-    return Ok((solution_a, solution_b));
+    Ok((solution_a, solution_b))
 }

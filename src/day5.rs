@@ -1,6 +1,4 @@
 use std::cmp::max;
-use std::collections::HashSet;
-use std::hash::Hash;
 use std::io;
 
 use crate::common;
@@ -19,9 +17,10 @@ impl Line {
         let delta_y = self.y1 - self.y2;
         if delta_x > 0 {
             let a = delta_y / delta_x;
-            let b = self.y1 - a * self.x1;
+            let b = 1 + size_x * a;
+            let c = (self.y1 - a * self.x1) * size_x;
             for x in self.x2..=self.x1 {
-                map[(x + ((a * x + b) * size_x)) as usize] += 1;
+                map[(b * x + c) as usize] += 1;
             }
         } else if delta_x == 0 {
             if delta_y > 0 {
@@ -35,9 +34,10 @@ impl Line {
             }
         } else {
             let a = delta_y / delta_x;
-            let b = self.y1 - a * self.x1;
+            let b = 1 + size_x * a;
+            let c = (self.y1 - a * self.x1) * size_x;
             for x in self.x1..=self.x2 {
-                map[(x + ((a * x + b) * size_x)) as usize] += 1;
+                map[(b * x + c) as usize] += 1;
             }
         }
     }
@@ -54,9 +54,8 @@ pub fn main(do_b: bool) -> io::Result<usize> {
     for line in lines {
         let line = line?;
         let split: Vec<&str> = line.trim().split(" -> ").collect();
-        assert_eq!(split.len(), 2);
-        let line_start: Vec<&str> = split[0].split(",").collect();
-        let line_end: Vec<&str> = split[1].split(",").collect();
+        let line_start: Vec<&str> = split[0].split(',').collect();
+        let line_end: Vec<&str> = split[1].split(',').collect();
         let vent = Line {
             x1: line_start[0].parse().unwrap(),
             y1: line_start[1].parse().unwrap(),

@@ -13,20 +13,19 @@ fn part_a() -> io::Result<usize> {
         let line = line?;
         let line = line.trim();
 
-        if zeroes.len() == 0 {
+        if zeroes.is_empty() {
             for _ in 0..line.len() {
                 zeroes.push(0);
                 ones.push(0);
             }
         }
-        let mut i = 0;
-        for c in line.chars() {
+
+        for (i, c) in line.chars().enumerate() {
             match c {
                 '1' => ones[i] += 1,
                 '0' => zeroes[i] += 1,
                 _ => debug!("error in input invalid character: {}", c),
             }
-            i += 1;
         }
     }
 
@@ -34,7 +33,7 @@ fn part_a() -> io::Result<usize> {
     let length = zeroes.len();
     for i in 0..length {
         if zeroes[i] > ones[i] {
-            gamma = gamma * 2;
+            gamma *= 2;
         } else {
             gamma = gamma * 2 + 1;
         }
@@ -42,7 +41,7 @@ fn part_a() -> io::Result<usize> {
 
     let mask = (0xFFFFFFFFusize).shr(32 - length);
 
-    return Ok(gamma * (!gamma & mask));
+    Ok(gamma * (!gamma & mask))
 }
 
 fn part_b() -> io::Result<usize> {
@@ -59,7 +58,7 @@ fn part_b() -> io::Result<usize> {
         for c in line.chars() {
             match c {
                 '1' => num = 1 + num * 2,
-                '0' => num = num * 2,
+                '0' => num *= 2,
                 _ => debug!("error in input invalid character: {}", c),
             }
         }
@@ -100,10 +99,10 @@ fn part_b() -> io::Result<usize> {
         }
     }
 
-    return Ok((oxygen_rating * scrubber_rating) as usize);
+    Ok((oxygen_rating * scrubber_rating) as usize)
 }
 
-fn is_zero_most_common(nums: &Vec<i32>, shift_param: usize) -> bool {
+fn is_zero_most_common(nums: &[i32], shift_param: usize) -> bool {
     let mut zeroes = 0;
     let mut ones = 0;
 
@@ -119,5 +118,5 @@ fn is_zero_most_common(nums: &Vec<i32>, shift_param: usize) -> bool {
 }
 
 pub fn main(do_b: bool) -> io::Result<usize> {
-    return if do_b { part_b() } else { part_a() };
+    if do_b { part_b() } else { part_a() }
 }
