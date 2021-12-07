@@ -20,7 +20,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
     }
     
     if do_b {
-        let mut mean = (sum as f64 / crabs.len() as f64).round() as usize;
+        let mean = (sum as f64 / crabs.len() as f64).round() as usize;
         let mut minimum_cost = usize::MAX;
         for m in mean - 1..mean + 1 {
             let cost = crabs.iter().map(|x| (0..=x.abs_diff(m)).sum::<usize>()).sum();
@@ -31,7 +31,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
         
         Ok(minimum_cost)
     } else {
-        crabs.sort();
+        crabs.sort_unstable();
         let median = crabs[crabs.len() / 2];
         Ok(crabs.iter().map(|x| x.abs_diff(median)).sum())
     }
