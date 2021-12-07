@@ -1,4 +1,5 @@
 #![feature(vec_retain_mut)]
+#![feature(int_abs_diff)]
 #[macro_use]
 extern crate log;
 extern crate pretty_env_logger;
@@ -22,7 +23,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
-// mod day7;
+mod day7;
 // mod day8;
 // mod day9;
 
@@ -34,8 +35,8 @@ fn main() {
     // Day::SeparatedUsize(day3::main).run("day 3");
     // Day::Combined(day4::main).run("day 4");
     // Day::SeparatedUsize(day5::main).run("day 5");
-    Day::SeparatedUsize(day6::main).run("day 6");
-    // Day::SeparatedUsize(day7::main).run("day 7");
+    // Day::SeparatedUsize(day6::main).run("day 6");
+    Day::SeparatedUsize(day7::main).run("day 7");
     // Day::Separated(day8::main).run("day 8");
     // Day::CombinedUsize(day9::main).run("day 9");
     // Day::SeparatedUsize(day10::main).run("day 10");
