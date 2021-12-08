@@ -118,5 +118,9 @@ fn is_zero_most_common(nums: &[i32], shift_param: usize) -> bool {
 }
 
 pub fn main(do_b: bool) -> io::Result<usize> {
-    if do_b { part_b() } else { part_a() }
+    if do_b {
+        part_b()
+    } else {
+        part_a()
+    }
 }
