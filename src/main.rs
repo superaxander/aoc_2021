@@ -23,7 +23,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
-// mod day8;
+mod day8;
 // mod day9;
 
 fn main() {
@@ -36,7 +36,7 @@ fn main() {
     Day::SeparatedUsize(day5::main).run("day 5");
     Day::SeparatedUsize(day6::main).run("day 6");
     Day::SeparatedUsize(day7::main).run("day 7");
-    // Day::Separated(day8::main).run("day 8");
+    Day::SeparatedUsize(day8::main).run("day 8");
     // Day::CombinedUsize(day9::main).run("day 9");
     // Day::SeparatedUsize(day10::main).run("day 10");
     // Day::SeparatedUsize(day11::main).run("day 11");
