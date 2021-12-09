@@ -2,13 +2,7 @@ use std::io;
 
 use crate::common;
 
-macro_rules! check_range {
-        ($map:expr,$x:expr,$dx:expr, $max:expr) => {
-            (($x as i32 + $dx) >= 0 && ($x as i32 + $dx) < $max as i32)
-        }
-    }
-
-fn check_neighbours(map: &Vec<usize>, x: usize, y: usize, size_x: usize, size_y: usize) -> Vec<usize> {
+fn get_neighbours(x: usize, y: usize, size_x: usize, size_y: usize) -> Vec<usize> {
     let mut neighbours = Vec::new();
     if (y as i32 + (-1)) >= 0 {
         neighbours.push((y - 1) * size_x + x);
@@ -50,7 +44,7 @@ pub fn main() -> io::Result<(usize, usize)> {
     for y in 0..map.len() / size_x {
         'x_loop: for x in 0..size_x {
             let value = map[y * size_x + x];
-            for neighbour in check_neighbours(&map, x, y, size_x, size_y) {
+            for neighbour in get_neighbours(x, y, size_x, size_y) {
                 if map[neighbour] <= value {
                     continue 'x_loop;
                 }
@@ -64,16 +58,16 @@ pub fn main() -> io::Result<(usize, usize)> {
 
     for (x, y) in low_points {
         let mut checked = vec![x + y * size_x];
-        let mut to_check_next = check_neighbours(&map, x, y, size_x, size_y);
+        let mut to_check_next = get_neighbours(x, y, size_x, size_y);
         let mut neighbours = Vec::new();
         let mut sum = 1;
 
-        while to_check_next.len() > 0 {
+        while !to_check_next.is_empty() {
             neighbours.extend(&to_check_next);
             to_check_next.clear();
             for neighbour in &neighbours {
                 if !checked.contains(neighbour) {
-                    let neighbours_neighbours = check_neighbours(&map, neighbour % size_x, neighbour / size_x, size_x, size_y);
+                    let neighbours_neighbours = get_neighbours(neighbour % size_x, neighbour / size_x, size_x, size_y);
 
                     let val = map[*neighbour];
 
@@ -93,5 +87,5 @@ pub fn main() -> io::Result<(usize, usize)> {
     }
 
     basins.sort_unstable_by_key(|n| -(*n as i32));
-    Ok((sum, basins[0..3].iter().fold(1, |a, b| a * b)))
+    Ok((sum, basins[0..3].iter().product()))
 }
