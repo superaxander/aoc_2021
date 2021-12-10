@@ -10,7 +10,7 @@ use common::{Day, Runnable};
 
 mod common;
 mod day1;
-// mod day10;
+mod day10;
 // mod day11;
 // mod day12;
 // mod day13;
@@ -38,7 +38,7 @@ fn main() {
     Day::SeparatedUsize(day7::main).run("day 7");
     Day::SeparatedUsize(day8::main).run("day 8");
     Day::CombinedUsize(day9::main).run("day 9");
-    // Day::SeparatedUsize(day10::main).run("day 10");
+    Day::CombinedUsize(day10::main).run("day 10");
     // Day::SeparatedUsize(day11::main).run("day 11");
     // Day::Separated(day12::main).run("day 12");
     // Day::SeparatedULong(day13::main).run("day 13");

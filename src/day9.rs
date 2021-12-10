@@ -4,13 +4,12 @@ use crate::common;
 
 fn get_neighbours(x: usize, y: usize, size_x: usize, size_y: usize) -> Vec<usize> {
     let mut neighbours = Vec::new();
-    if (y as i32 + (-1)) >= 0 {
+    if (y as i32 - 1) >= 0 {
         neighbours.push((y - 1) * size_x + x);
     }
-    if (x as i32 + (-1)) >= 0 {
+    if (x as i32 - 1) >= 0 {
         neighbours.push(y * size_x + x - 1);
     }
-
     if (y as i32 + 1) < size_y as i32 {
         neighbours.push((y + 1) * size_x + x);
     }
