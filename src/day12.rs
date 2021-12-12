@@ -1,28 +1,22 @@
-use std::collections::{HashMap, HashSet};
-use std::collections::hash_map::Entry;
 use std::io;
 
 use crate::common;
 
-fn dfs<'a>(paths: &'a HashMap<String, Vec<String>>, visited: &'a HashSet<&'a str>, current: &'a str, allow_double: bool) -> (usize, usize) {
+fn dfs(paths: &[Vec<usize>], big: &[bool], not_visited: &mut [bool], current: usize, allow_double: bool) -> (usize, usize) {
     let mut single_paths = 0;
     let mut double_paths = 0;
     for outgoing in &paths[current] {
-        if outgoing == "end" {
+        if *outgoing == 1 {
             single_paths += 1;
-        } else if !outgoing.chars().next().unwrap().is_lowercase() || !visited.contains(&**outgoing) {
-            if paths.contains_key(outgoing) {
-                let mut copy = visited.clone();
-                copy.insert(outgoing);
-                let (single, double) = dfs(paths, &copy, outgoing, allow_double);
-                single_paths += single;
-                double_paths += double;
-            }
+        } else if big[*outgoing] || not_visited[*outgoing] {
+            not_visited[*outgoing] = false;
+            let (single, double) = dfs(paths, big, not_visited, *outgoing, allow_double);
+            not_visited[*outgoing] = true;
+            single_paths += single;
+            double_paths += double;
         } else if allow_double {
-            if paths.contains_key(outgoing) {
-                let (single, double) = dfs(paths, visited, outgoing, false);
-                double_paths += single + double;
-            }
+            let (single, double) = dfs(paths, big, not_visited, *outgoing, false);
+            double_paths += single + double;
         }
     }
 
@@ -32,31 +26,52 @@ fn dfs<'a>(paths: &'a HashMap<String, Vec<String>>, visited: &'a HashSet<&'a str
 pub fn main() -> io::Result<(usize, usize)> {
     let lines = common::read_lines("inputs/12.txt")?;
 
-    let mut paths: HashMap<String, Vec<String>> = HashMap::new();
+    let mut paths: Vec<Vec<usize>> = vec![Vec::new(), Vec::new()];
+
+    let mut cave_set = vec!["start".to_string(), "end".to_string()];
 
     for line in lines {
         let line = line?;
         let line = line.trim();
         let split: Vec<&str> = line.split('-').collect();
-        let a = String::from(split[0]);
-        let b = String::from(split[1]);
-        if b != "start" {
-            match paths.entry(a.clone()) {
-                Entry::Occupied(mut e) => { e.get_mut().push(b.clone()); }
-                Entry::Vacant(e) => { e.insert(vec![b.clone()]); }
-            }
+
+        let a;
+        if let Some(found) = cave_set.iter().position(|c| *c == split[0]) {
+            a = found;
+        } else {
+            a = cave_set.len();
+            cave_set.push(split[0].to_string());
+            paths.push(Vec::new())
         }
-        if a != "start" {
-            match paths.entry(b) {
-                Entry::Occupied(mut e) => { e.get_mut().push(a); }
-                Entry::Vacant(e) => { e.insert(vec![a]); }
-            }
+
+        let b;
+        if let Some(found) = cave_set.iter().position(|c| *c == split[1]) {
+            b = found;
+        } else {
+            b = cave_set.len();
+            cave_set.push(split[1].to_string());
+            paths.push(Vec::new())
+        }
+
+        if b > 0 {
+            paths[a].push(b);
+        }
+        if a > 0 {
+            paths[b].push(a);
         }
     }
 
-    let mut set = HashSet::new();
-    set.insert("start");
-    let (single, double) = dfs(&paths, &set, "start", true);
+    let cave_count = cave_set.len();
+
+    let mut set = vec![true; cave_count];
+    set[0] = false;
+    let (single, double) = dfs(
+        &paths,
+        &cave_set.iter().map(|s| !s.chars().next().unwrap().is_lowercase()).collect::<Vec<bool>>(),
+        &mut set,
+        0,
+        true,
+    );
 
     Ok((single, single + double))
 }
