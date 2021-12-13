@@ -15,6 +15,7 @@ impl Line {
     fn add_points(&self, map: &mut Vec<usize>, size_x: i32) {
         let delta_x = self.x1 - self.x2;
         let delta_y = self.y1 - self.y2;
+        #[allow(clippy::comparison_chain)]
         if delta_x > 0 {
             let a = delta_y / delta_x;
             let b = 1 + size_x * a;

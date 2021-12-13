@@ -76,16 +76,18 @@ pub fn main() -> io::Result<(usize, usize)> {
             is_first = false;
         }
     }
+    let mut string = String::new();
     for y in 0..size_y {
         for x in 0..adjusted_size_x {
             if map[x + y * size_x] {
-                print!("#")
+                string.push('#')
             } else {
-                print!("-")
+                string.push('-');
             }
         }
-        println!()
+        string.push('\n')
     }
+    print!("{}", string);
 
     Ok((cnt, 0))
 }
