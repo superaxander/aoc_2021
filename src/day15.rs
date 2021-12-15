@@ -100,7 +100,6 @@ pub fn main(do_b: bool) -> io::Result<usize> {
     let mut open_set = BinaryHeap::new();
     open_set.push(Reverse(Node::new(0, 0)));
 
-    let mut came_from = vec![usize::MAX; size_x * size_y];
     let mut gscore = vec![usize::MAX; size_x * size_y];
     let mut fscore = vec![usize::MAX; size_x * size_y];
     gscore[0] = 0;
@@ -119,9 +118,8 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let neighbour = x - 1 + y * size_x;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
-                came_from[neighbour] = current;
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + x + y;
+                fscore[neighbour] = tentative_gscore + (x + y) * (x + y);
                 if !open_set.iter().any(|n| n.0.idx == neighbour) {
                     open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
                 }
@@ -131,9 +129,8 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let neighbour = x + 1 + y * size_x;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
-                came_from[neighbour] = current;
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + x + y;
+                fscore[neighbour] = tentative_gscore + (x + y) * (x + y);
                 if !open_set.iter().any(|n| n.0.idx == neighbour) {
                     open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
                 }
@@ -144,9 +141,8 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let neighbour = x + (y - 1) * size_x;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
-                came_from[neighbour] = current;
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + x + y;
+                fscore[neighbour] = tentative_gscore + (x + y) * (x + y);
                 if !open_set.iter().any(|n| n.0.idx == neighbour) {
                     open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
                 }
@@ -156,9 +152,8 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let neighbour = x + (y + 1) * size_x;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
-                came_from[neighbour] = current;
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + x + y;
+                fscore[neighbour] = tentative_gscore + (x + y) * (x + y);
                 if !open_set.iter().any(|n| n.0.idx == neighbour) {
                     open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
                 }
