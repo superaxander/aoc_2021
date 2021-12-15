@@ -1,5 +1,5 @@
 use std::cmp::{Ordering, Reverse};
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashSet};
 use std::io;
 
 use crate::common;
@@ -21,23 +21,23 @@ impl Node {
 
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.fscore.partial_cmp(&other.fscore)
+        other.fscore.partial_cmp(&self.fscore)
     }
 
     fn lt(&self, other: &Self) -> bool {
-        self.fscore < other.fscore
+        self.fscore >= other.fscore
     }
 
     fn le(&self, other: &Self) -> bool {
-        self.fscore <= other.fscore
-    }
-
-    fn gt(&self, other: &Self) -> bool {
         self.fscore > other.fscore
     }
 
+    fn gt(&self, other: &Self) -> bool {
+        self.fscore <= other.fscore
+    }
+
     fn ge(&self, other: &Self) -> bool {
-        self.fscore >= other.fscore
+        self.fscore < other.fscore
     }
 }
 
@@ -80,6 +80,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
 
     if do_b {
         let length = map.len();
+        map.reserve(length*4);
         for i in 1..5 {
             for j in 0..length {
                 let val = map[j] + i;
@@ -99,15 +100,14 @@ pub fn main(do_b: bool) -> io::Result<usize> {
     // Thank you wikipedia for the pseudo code :)
 
     let mut open_set = BinaryHeap::new();
-    open_set.push(Reverse(Node::new(0, 0)));
+    open_set.push(Node::new(0, 0));
 
     let mut gscore = vec![usize::MAX; size_x * size_y];
-    let mut fscore = vec![usize::MAX; size_x * size_y];
     gscore[0] = 0;
-    fscore[0] = 0;
 
     while !open_set.is_empty() {
-        let current = open_set.pop().unwrap().0.idx;
+        let current = open_set.pop().unwrap().idx;
+        
         if current == goal {
             break;
         }
@@ -120,10 +120,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + size_x - x + size_y - y;
-                if !open_set.iter().any(|n| n.0.idx == neighbour) {
-                    open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
-                }
+                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
             }
         }
         if x < size_x - 1 {
@@ -131,10 +128,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + size_x - x + size_y - y;
-                if !open_set.iter().any(|n| n.0.idx == neighbour) {
-                    open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
-                }
+                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
             }
         }
 
@@ -143,10 +137,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + size_x - x + size_y - y;
-                if !open_set.iter().any(|n| n.0.idx == neighbour) {
-                    open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
-                }
+                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
             }
         }
         if y < size_y - 1 {
@@ -154,13 +145,9 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                fscore[neighbour] = tentative_gscore + size_x - x + size_y - y;
-                if !open_set.iter().any(|n| n.0.idx == neighbour) {
-                    open_set.push(Reverse(Node::new(neighbour, fscore[neighbour])))
-                }
+                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
             }
         }
     }
-
     Ok(gscore[goal])
 }
