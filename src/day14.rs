@@ -21,14 +21,24 @@ pub fn main() -> io::Result<(usize, usize)> {
                     continue;
                 }
                 match polymer.entry((last_char, c)) {
-                    Occupied(mut e) => { *e.get_mut() += 1; }
-                    Vacant(mut e) => { e.insert(1); }
+                    Occupied(mut e) => {
+                        *e.get_mut() += 1;
+                    }
+                    Vacant(e) => {
+                        e.insert(1);
+                    }
                 }
                 last_char = c;
             }
         } else if !line.is_empty() {
             let split = line.split(" -> ").collect::<Vec<&str>>();
-            insertion_pairs.insert((split[0].chars().next().unwrap(), split[0].chars().nth(1).unwrap()), split[1].chars().next().unwrap());
+            insertion_pairs.insert(
+                (
+                    split[0].chars().next().unwrap(),
+                    split[0].chars().nth(1).unwrap(),
+                ),
+                split[1].chars().next().unwrap(),
+            );
         }
     }
     let mut count_a = 0;
@@ -38,12 +48,20 @@ pub fn main() -> io::Result<(usize, usize)> {
         for (p, i) in keys {
             if let Some(r) = insertion_pairs.get(&p) {
                 match polymer.entry((p.0, *r)) {
-                    Occupied(mut e) => { *e.get_mut() += i; }
-                    Vacant(mut e) => { e.insert(i); }
+                    Occupied(mut e) => {
+                        *e.get_mut() += i;
+                    }
+                    Vacant(e) => {
+                        e.insert(i);
+                    }
                 }
                 match polymer.entry((*r, p.1)) {
-                    Occupied(mut e) => { *e.get_mut() += i; }
-                    Vacant(mut e) => { e.insert(i); }
+                    Occupied(mut e) => {
+                        *e.get_mut() += i;
+                    }
+                    Vacant(e) => {
+                        e.insert(i);
+                    }
                 }
                 *polymer.get_mut(&p).unwrap() -= i;
             }
@@ -54,8 +72,12 @@ pub fn main() -> io::Result<(usize, usize)> {
             polymer.keys().for_each(|s| {
                 let i = polymer[s];
                 match counts.entry(s.0) {
-                    Occupied(mut e) => { *e.get_mut() += i; }
-                    Vacant(mut e) => { e.insert(i); }
+                    Occupied(mut e) => {
+                        *e.get_mut() += i;
+                    }
+                    Vacant(e) => {
+                        e.insert(i);
+                    }
                 };
             });
             count_a = counts.values().max().unwrap() - counts.values().min().unwrap() + 1;
@@ -66,10 +88,17 @@ pub fn main() -> io::Result<(usize, usize)> {
     polymer.keys().for_each(|s| {
         let i = polymer[s];
         match counts.entry(s.0) {
-            Occupied(mut e) => { *e.get_mut() += i; }
-            Vacant(mut e) => { e.insert(i); }
+            Occupied(mut e) => {
+                *e.get_mut() += i;
+            }
+            Vacant(e) => {
+                e.insert(i);
+            }
         };
     });
 
-    Ok((count_a, counts.values().max().unwrap() - counts.values().min().unwrap() + 1))
+    Ok((
+        count_a,
+        counts.values().max().unwrap() - counts.values().min().unwrap() + 1,
+    ))
 }

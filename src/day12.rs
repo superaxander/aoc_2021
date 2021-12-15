@@ -2,7 +2,13 @@ use std::io;
 
 use crate::common;
 
-fn dfs(paths: &[Vec<usize>], big: &[bool], not_visited: &mut [bool], current: usize, allow_double: bool) -> (usize, usize) {
+fn dfs(
+    paths: &[Vec<usize>],
+    big: &[bool],
+    not_visited: &mut [bool],
+    current: usize,
+    allow_double: bool,
+) -> (usize, usize) {
     let mut single_paths = 0;
     let mut double_paths = 0;
     for outgoing in &paths[current] {
@@ -67,7 +73,10 @@ pub fn main() -> io::Result<(usize, usize)> {
     set[0] = false;
     let (single, double) = dfs(
         &paths,
-        &cave_set.iter().map(|s| !s.chars().next().unwrap().is_lowercase()).collect::<Vec<bool>>(),
+        &cave_set
+            .iter()
+            .map(|s| !s.chars().next().unwrap().is_lowercase())
+            .collect::<Vec<bool>>(),
         &mut set,
         0,
         true,

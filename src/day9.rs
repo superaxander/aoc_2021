@@ -66,7 +66,8 @@ pub fn main() -> io::Result<(usize, usize)> {
             to_check_next.clear();
             for neighbour in &neighbours {
                 if !checked.contains(neighbour) {
-                    let neighbours_neighbours = get_neighbours(neighbour % size_x, neighbour / size_x, size_x, size_y);
+                    let neighbours_neighbours =
+                        get_neighbours(neighbour % size_x, neighbour / size_x, size_x, size_y);
 
                     let val = map[*neighbour];
 

@@ -31,14 +31,32 @@ pub fn main() -> io::Result<(usize, usize)> {
             let fold: usize = split[1].parse().unwrap();
             match split[0] {
                 "x" => {
-                    points = points.iter().map(|(x, y)| if *x > fold { (fold * 2 - x, *y) } else { (*x, *y) }).collect();
+                    points = points
+                        .iter()
+                        .map(|(x, y)| {
+                            if *x > fold {
+                                (fold * 2 - x, *y)
+                            } else {
+                                (*x, *y)
+                            }
+                        })
+                        .collect();
                     size_x = fold
                 }
                 "y" => {
-                    points = points.iter().map(|(x, y)| if *y > fold { (*x, fold * 2 - y) } else { (*x, *y) }).collect();
+                    points = points
+                        .iter()
+                        .map(|(x, y)| {
+                            if *y > fold {
+                                (*x, fold * 2 - y)
+                            } else {
+                                (*x, *y)
+                            }
+                        })
+                        .collect();
                     size_y = fold
-                },
-                _ => debug!("Invalid axis: {}", split[0])
+                }
+                _ => debug!("Invalid axis: {}", split[0]),
             }
             if is_first {
                 cnt = points.len();

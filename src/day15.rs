@@ -1,5 +1,5 @@
-use std::cmp::{Ordering, Reverse};
-use std::collections::{BinaryHeap, HashSet};
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 use std::io;
 
 use crate::common;
@@ -12,10 +12,7 @@ struct Node {
 
 impl Node {
     fn new(idx: usize, fscore: usize) -> Self {
-        Node {
-            idx,
-            fscore,
-        }
+        Node { idx, fscore }
     }
 }
 
@@ -80,7 +77,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
 
     if do_b {
         let length = map.len();
-        map.reserve(length*4);
+        map.reserve(length * 4);
         for i in 1..5 {
             for j in 0..length {
                 let val = map[j] + i;
@@ -107,7 +104,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
 
     while !open_set.is_empty() {
         let current = open_set.pop().unwrap().idx;
-        
+
         if current == goal {
             break;
         }
@@ -120,7 +117,10 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
+                open_set.push(Node::new(
+                    neighbour,
+                    tentative_gscore + size_x - x + size_y - y,
+                ));
             }
         }
         if x < size_x - 1 {
@@ -128,7 +128,10 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
+                open_set.push(Node::new(
+                    neighbour,
+                    tentative_gscore + size_x - x + size_y - y,
+                ));
             }
         }
 
@@ -137,7 +140,10 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
+                open_set.push(Node::new(
+                    neighbour,
+                    tentative_gscore + size_x - x + size_y - y,
+                ));
             }
         }
         if y < size_y - 1 {
@@ -145,7 +151,10 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
-                open_set.push(Node::new(neighbour, tentative_gscore + size_x - x + size_y - y));
+                open_set.push(Node::new(
+                    neighbour,
+                    tentative_gscore + size_x - x + size_y - y,
+                ));
             }
         }
     }
