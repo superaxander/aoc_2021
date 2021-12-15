@@ -1,5 +1,5 @@
 use std::cmp::{Ordering, Reverse};
-use std::collections::{BinaryHeap};
+use std::collections::BinaryHeap;
 use std::io;
 
 use crate::common;
@@ -11,9 +11,10 @@ struct Node {
 }
 
 impl Node {
-    fn new(idx: usize, fscore:usize) -> Self {
+    fn new(idx: usize, fscore: usize) -> Self {
         Node {
-            idx, fscore
+            idx,
+            fscore,
         }
     }
 }
@@ -94,7 +95,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
     let size_y = map.len() / size_x;
 
     let goal = map.len() - 1;
-    
+
     // Thank you wikipedia for the pseudo code :)
 
     let mut open_set = BinaryHeap::new();
@@ -115,7 +116,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
         let y = current / size_x;
 
         if x > 0 {
-            let neighbour = x - 1 + y * size_x;
+            let neighbour = current - 1;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
@@ -126,7 +127,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             }
         }
         if x < size_x - 1 {
-            let neighbour = x + 1 + y * size_x;
+            let neighbour = current + 1;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
@@ -138,7 +139,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
         }
 
         if y > 0 {
-            let neighbour = x + (y - 1) * size_x;
+            let neighbour = current - size_x;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
@@ -149,7 +150,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
             }
         }
         if y < size_y - 1 {
-            let neighbour = x + (y + 1) * size_x;
+            let neighbour = current + size_x;
             let tentative_gscore = gscore[current] + map[neighbour];
             if tentative_gscore < gscore[neighbour] {
                 gscore[neighbour] = tentative_gscore;
