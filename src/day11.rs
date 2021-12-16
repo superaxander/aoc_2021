@@ -27,15 +27,16 @@ pub fn main() -> io::Result<(usize, usize)> {
     }
 
     let mut count = 0;
+    let mut flashed = Vec::with_capacity(map.len());
 
     for time in 0..usize::MAX {
         map.iter_mut().for_each(|energy| *energy += 1);
-
-        let mut flashed = map
+        
+        flashed.clear();
+        flashed.extend(map
             .iter()
             .enumerate()
-            .filter_map(|(i, energy)| if *energy == 10 { Some(i) } else { None })
-            .collect::<Vec<usize>>();
+            .filter_map(|(i, energy)| if *energy == 10 { Some(i) } else { None }));
         while !flashed.is_empty() {
             if time < 100 {
                 count += flashed.len();
@@ -54,11 +55,11 @@ pub fn main() -> io::Result<(usize, usize)> {
                 increment(&mut map, x, y + 1, size_x, size_y);
                 increment(&mut map, x + 1, y + 1, size_x, size_y);
             }
-            flashed = map
+            flashed.clear();
+            flashed.extend(map
                 .iter()
                 .enumerate()
-                .filter_map(|(i, energy)| if *energy == 10 { Some(i) } else { None })
-                .collect::<Vec<usize>>();
+                .filter_map(|(i, energy)| if *energy == 10 { Some(i) } else { None }));
         }
 
         let mut amount = 0;

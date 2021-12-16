@@ -2,7 +2,7 @@ use std::io;
 
 use crate::common;
 
-pub fn main(do_b: bool) -> io::Result<usize> {
+pub fn main() -> io::Result<(usize, usize)> {
     let lines = common::read_lines("inputs/6.txt")?;
 
     let mut fishes = [0; 9];
@@ -17,9 +17,7 @@ pub fn main(do_b: bool) -> io::Result<usize> {
         }
     }
 
-    let days = if do_b { 256 } else { 80 };
-
-    for _ in 0..days {
+    for _ in 0..80 {
         let temp = fishes[0];
         for i in 1..9 {
             fishes[i - 1] = fishes[i];
@@ -28,5 +26,16 @@ pub fn main(do_b: bool) -> io::Result<usize> {
         fishes[6] += temp;
     }
 
-    Ok(fishes.iter().sum())
+    let solution_a = fishes.iter().sum();
+
+    for _ in 80..256 {
+        let temp = fishes[0];
+        for i in 1..9 {
+            fishes[i - 1] = fishes[i];
+        }
+        fishes[8] = temp;
+        fishes[6] += temp;
+    }
+
+    Ok((solution_a, fishes.iter().sum()))
 }

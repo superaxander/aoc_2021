@@ -13,7 +13,6 @@ pub fn main() -> io::Result<(i32, i32)> {
         if let Ok(num) = line?.trim().parse::<i32>() {
             if num > last_number {
                 solution_a += 1;
-                debug!("{} > {}, {}", num, last_number, solution_a)
             }
             let len = sums.len();
             if len > 2 {
@@ -33,7 +32,6 @@ pub fn main() -> io::Result<(i32, i32)> {
     let mut last_number = i32::MAX;
     for sum in sums {
         if sum > last_number {
-            debug!("{} > {}", sum, last_number);
             solution_b += 1
         }
         last_number = sum;

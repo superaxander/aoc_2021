@@ -40,7 +40,7 @@ macro_rules! get_bits {
     }};
 }
 
-fn parse_packet(bits: &[usize], idx: usize, is_sub_packet: bool) -> (usize, Packet) {
+fn parse_packet(bits: &[usize], idx: usize) -> (usize, Packet) {
     let mut idx = idx;
     let p_ver = get_bits!(bits, idx, 3);
     let p_type = get_bits!(bits, idx, 3);
@@ -54,9 +54,6 @@ fn parse_packet(bits: &[usize], idx: usize, is_sub_packet: bool) -> (usize, Pack
                 if n & 0b10000 == 0 {
                     break;
                 }
-            }
-            if !is_sub_packet && idx % 4 != 0 {
-                assert_eq!(get_bits!(bits, idx, 4 - (idx % 4)), 0);
             }
             (
                 idx,
@@ -72,7 +69,7 @@ fn parse_packet(bits: &[usize], idx: usize, is_sub_packet: bool) -> (usize, Pack
                 let no_of_sub_packets = get_bits!(bits, idx, 11);
                 sub_packets = Vec::with_capacity(no_of_sub_packets);
                 for _ in 0..no_of_sub_packets {
-                    let (i, sub_packet) = parse_packet(bits, idx, true);
+                    let (i, sub_packet) = parse_packet(bits, idx);
                     idx = i;
                     sub_packets.push(sub_packet);
                 }
@@ -81,14 +78,11 @@ fn parse_packet(bits: &[usize], idx: usize, is_sub_packet: bool) -> (usize, Pack
                 final_idx += idx;
                 sub_packets = Vec::new();
                 while idx < final_idx {
-                    let (i, sub_packet) = parse_packet(bits, idx, true);
+                    let (i, sub_packet) = parse_packet(bits, idx);
                     idx = i;
                     sub_packets.push(sub_packet);
                 }
                 assert_eq!(idx, final_idx)
-            }
-            if !is_sub_packet && idx % 4 != 0 {
-                assert_eq!(get_bits!(bits, idx, 4 - (idx % 4)), 0);
             }
             (
                 idx,
@@ -153,7 +147,7 @@ pub fn main() -> io::Result<(usize, usize)> {
     let l = bit_string.len();
     bit_string[l - 1] <<= BIT_SIZE - idx % BIT_SIZE;
 
-    let (_, packet) = parse_packet(&bit_string, 0, false);
+    let (_, packet) = parse_packet(&bit_string, 0);
 
     Ok((sum_versions(&packet), calculate(&packet)))
 }

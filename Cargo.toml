@@ -5,8 +5,8 @@ authors = ["Alexander Stekelenburg <anoniem.axander@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-#[profile.release]
-#debug = true
+[profile.release]
+debug = true
 
 [dependencies]
 log = "0.4.14"

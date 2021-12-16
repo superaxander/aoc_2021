@@ -44,7 +44,7 @@ impl Line {
     }
 }
 
-pub fn main(do_b: bool) -> io::Result<usize> {
+pub fn main() -> io::Result<(usize, usize)> {
     let mut vents = Vec::new();
 
     let lines = common::read_lines("inputs/5.txt")?;
@@ -69,14 +69,14 @@ pub fn main(do_b: bool) -> io::Result<usize> {
     }
 
     let mut map = vec![0; (size_x as usize + 1) * (size_y as usize + 1)];
-    if !do_b {
-        vents
-            .iter()
-            .filter(|line| line.x1 == line.x2 || line.y1 == line.y2)
-            .for_each(|v| v.add_points(&mut map, size_x));
+    vents.retain(|v| if v.x1 == v.x2 || v.y1 == v.y2 {
+        v.add_points(&mut map, size_x);
+        false
     } else {
-        vents.iter().for_each(|v| v.add_points(&mut map, size_x));
-    }
+        true
+    });
+    let solution_a = map.iter().filter(|x| **x > 1).count();
+    vents.iter().for_each(|v| v.add_points(&mut map, size_x));
 
-    return Ok(map.iter().filter(|x| **x > 1).count());
+    return Ok((solution_a, map.iter().filter(|x| **x > 1).count()));
 }

@@ -38,10 +38,10 @@ fn main() {
     Day::Combined(day2::main).run("day 2");
     Day::SeparatedUsize(day3::main).run("day 3");
     Day::Combined(day4::main).run("day 4");
-    Day::SeparatedUsize(day5::main).run("day 5");
-    Day::SeparatedUsize(day6::main).run("day 6");
+    Day::CombinedUsize(day5::main).run("day 5");
+    Day::CombinedUsize(day6::main).run("day 6");
     Day::SeparatedUsize(day7::main).run("day 7");
-    Day::SeparatedUsize(day8::main).run("day 8");
+    Day::CombinedUsize(day8::main).run("day 8");
     Day::CombinedUsize(day9::main).run("day 9");
     Day::CombinedUsize(day10::main).run("day 10");
     Day::CombinedUsize(day11::main).run("day 11");
