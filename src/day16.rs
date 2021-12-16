@@ -2,6 +2,8 @@ use std::io;
 
 use crate::common;
 
+const BIT_SIZE: usize = usize::BITS as usize;
+
 #[derive(Debug)]
 enum PacketData {
     Literal(usize),
@@ -22,7 +24,7 @@ struct Packet {
 
 macro_rules! get_bit {
     ($bits:expr, $idx:ident) => {{
-        let mut bit = ($bits[$idx / 64] >> (63 - $idx % 64)) & 1;
+        let bit = ($bits[$idx / BIT_SIZE] >> (BIT_SIZE - 1 - $idx % BIT_SIZE)) & 1;
         $idx += 1;
         bit
     }};
@@ -122,7 +124,7 @@ pub fn main() -> io::Result<(usize, usize)> {
         for c in line.chars() {
             match c {
                 '0'..='9' => {
-                    if idx % 64 == 0 {
+                    if idx % BIT_SIZE == 0 {
                         bit_string.push(c as usize - '0' as usize);
                     } else {
                         let l = bit_string.len();
@@ -131,7 +133,7 @@ pub fn main() -> io::Result<(usize, usize)> {
                     idx += 4;
                 }
                 'A'..='F' => {
-                    if idx % 64 == 0 {
+                    if idx % BIT_SIZE == 0 {
                         bit_string.push(c as usize - 'A' as usize + 10);
                     } else {
                         let l = bit_string.len();
@@ -149,7 +151,7 @@ pub fn main() -> io::Result<(usize, usize)> {
         }
     }
     let l = bit_string.len();
-    bit_string[l - 1] <<= 64 - idx % 64;
+    bit_string[l - 1] <<= BIT_SIZE - idx % BIT_SIZE;
 
     let (_, packet) = parse_packet(&bit_string, 0, false);
 
