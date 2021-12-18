@@ -11,6 +11,8 @@ enum Number {
     Literal(usize),
 }
 
+const LITERAL_0: Number = Literal(0);
+
 impl Number {
     fn first(&mut self) -> &mut usize {
         match self {
@@ -18,21 +20,21 @@ impl Number {
             Literal(n) => n
         }
     }
-    
+
     fn last(&mut self) -> &mut usize {
         match self {
             Pair(_, r) => r.last(),
             Literal(n) => n
         }
     }
-    
+
     fn split(self) -> (bool, Box<Number>) {
         match self {
             Pair(l, r) => {
                 let (split, l) = l.split();
                 if split {
                     (true, Box::new(Pair(l, r)))
-                }else {
+                } else {
                     let (split, r) = r.split();
                     (split, Box::new(Pair(l, r)))
                 }
@@ -45,7 +47,7 @@ impl Number {
         }
     }
 
-    fn explode(self, depth: usize, mut left_num: Option<&mut usize>, right_num: Option<&mut usize>) -> (bool, Box<Number>) {
+    fn explode(self, depth: usize, mut left_num: Option<&mut usize>, right_num: Option<&mut usize>) -> Box<Number> {
         if depth == 3 {
             match self {
                 Pair(mut l, mut r) => {
@@ -57,7 +59,7 @@ impl Number {
                                         *l += ll;
                                     }
                                     *rn += lr;
-                                    (true, Box::new(Pair(Box::new(Literal(0)), r)))
+                                    Box::new(Pair(Box::new(LITERAL_0), r))
                                 } else {
                                     panic!("Impossible pattern")
                                 }
@@ -72,7 +74,7 @@ impl Number {
                                     if let Some(r) = right_num {
                                         *r += rr;
                                     }
-                                    (true, Box::new(Pair(l, Box::new(Literal(0)))))
+                                    Box::new(Pair(l, Box::new(LITERAL_0)))
                                 } else {
                                     panic!("Impossible pattern")
                                 }
@@ -89,7 +91,7 @@ impl Number {
                                     if let Literal(rl) = &mut **rl {
                                         *rl += lr;
                                     }
-                                    (true, (Pair(Box::new(Literal(0)), r).explode(depth, left_num, right_num)).1)
+                                    Pair(Box::new(LITERAL_0), r).explode(depth, left_num, right_num)
                                 } else {
                                     panic!("Impossible pattern")
                                 }
@@ -98,29 +100,28 @@ impl Number {
                             }
                         }
                         _ => {
-                            (false, Box::new(Pair(l, r)))
+                            Box::new(Pair(l, r))
                         }
                     }
                 }
-                _ => (false, Box::new(self))
+                _ => Box::new(self)
             }
         } else {
             match self {
                 Pair(l, mut r) => {
-                    let (changed, l) = l.explode(depth + 1, left_num, Some(r.first()));
-                    let mut l = *l;
+                    let mut l = *l.explode(depth + 1, left_num, Some(r.first()));
                     let left_num = l.last();
-                    let (c, r) = r.explode(depth + 1, Some(left_num), right_num);
-                    (changed || c, Box::new(Pair(Box::new(l), r)))
+                    let r = r.explode(depth + 1, Some(left_num), right_num);
+                    Box::new(Pair(Box::new(l), r))
                 }
-                _ => (false, Box::new(self))
+                _ => Box::new(self)
             }
         }
     }
-    
+
     fn magnitude(self) -> usize {
         match self {
-            Pair(l, r) => 3 * l.magnitude() + 2*r.magnitude(),
+            Pair(l, r) => 3 * l.magnitude() + 2 * r.magnitude(),
             Literal(n) => n
         }
     }
@@ -146,7 +147,7 @@ impl Add for Box<Number> {
 pub fn main() -> io::Result<(usize, usize)> {
     let lines = common::read_lines("inputs/18.txt")?;
 
-    let mut current = Box::new(Literal(0));
+    let mut current = Box::new(LITERAL_0);
     let mut pairs = Vec::new();
 
 
@@ -157,17 +158,17 @@ pub fn main() -> io::Result<(usize, usize)> {
         let pair = parse_pair(&line.chars().collect::<Vec<char>>()).1;
         pairs.push(pair.clone());
 
-        if *current == Literal(0) {
+        if *current == LITERAL_0 {
             current = pair;
         } else {
             current = reduce(current + pair)
         }
     }
-    
+
     let mut max = 0;
     for i in 0..pairs.len() {
-        for j in i+1..pairs.len() {
-            let magnitude = reduce(pairs[i].clone()+pairs[j].clone()).magnitude();
+        for j in i + 1..pairs.len() {
+            let magnitude = reduce(pairs[i].clone() + pairs[j].clone()).magnitude();
             if magnitude > max {
                 max = magnitude;
             }
@@ -182,14 +183,10 @@ pub fn main() -> io::Result<(usize, usize)> {
     Ok((current.magnitude(), max))
 }
 
-fn reduce(current: Box<Number>) -> Box<Number>{
+fn reduce(current: Box<Number>) -> Box<Number> {
     let mut current = current;
     loop {
-        loop {
-            let (exploded, new) = current.explode(0, None, None);
-            current = new;
-            if !exploded { break; }
-        }
+        current = current.explode(0, None, None);
         let (split, new) = current.split();
         current = new;
         if !split { break; }
