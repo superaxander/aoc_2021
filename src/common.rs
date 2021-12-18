@@ -17,6 +17,7 @@ where
 pub enum Day {
     Combined(fn() -> io::Result<(i32, i32)>),
     CombinedUsize(fn() -> io::Result<(usize, usize)>),
+    CombinedLong(fn() -> io::Result<(i64, i64)>),
     Separated(fn(bool) -> io::Result<i32>),
     SeparatedLong(fn(bool) -> io::Result<i64>),
     SeparatedUsize(fn(bool) -> io::Result<usize>),
@@ -43,6 +44,18 @@ impl Runnable for Day {
                 }
             }
             Day::CombinedUsize(func) => {
+                let now = Instant::now();
+                let result = func();
+                info!("Combined parts took {:#?}", now.elapsed());
+                match result {
+                    Ok((solution_a, solution_b)) => {
+                        info!("Solution {}a: {}", name, solution_a);
+                        info!("Solution {}b: {}", name, solution_b);
+                    }
+                    Err(err) => error!("Error occurred running {}: {}", name, err),
+                }
+            }
+            Day::CombinedLong(func) => {
                 let now = Instant::now();
                 let result = func();
                 info!("Combined parts took {:#?}", now.elapsed());
