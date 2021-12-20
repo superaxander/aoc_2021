@@ -4,14 +4,14 @@
 extern crate log;
 extern crate pretty_env_logger;
 
+use std::time::Instant;
+
 use mimalloc::MiMalloc;
+
+use common::{Day, Runnable};
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
-
-use std::time::Instant;
-
-use common::{Day, Runnable};
 
 mod common;
 mod day1;
@@ -24,7 +24,9 @@ mod day15;
 mod day16;
 mod day17;
 mod day18;
+mod day19;
 mod day2;
+mod day20;
 mod day3;
 mod day4;
 mod day5;
@@ -54,5 +56,7 @@ fn main() {
     Day::CombinedUsize(day16::main).run("day 16");
     Day::CombinedLong(day17::main).run("day 17");
     Day::CombinedUsize(day18::main).run("day 18");
+    Day::CombinedUsize(day19::main).run("day 19");
+    Day::CombinedUsize(day20::main).run("day 20");
     info!("All days together took {:#?}", now.elapsed());
 }

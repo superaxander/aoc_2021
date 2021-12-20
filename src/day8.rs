@@ -62,33 +62,35 @@ pub fn main() -> io::Result<(usize, usize)> {
             }
         }
 
-        unknown_patterns.retain(|unknown_pattern| if unknown_pattern.len() == 6 {
-            if (&known_patterns[4]).is_subset(unknown_pattern) {
-                (&mut known_patterns[9]).extend(unknown_pattern);
-                false
-            } else if (&known_patterns[7]).is_subset(unknown_pattern) {
-                (&mut known_patterns[0]).extend(unknown_pattern);
-                false
-            } else {
-                (&mut known_patterns[6]).extend(unknown_pattern);
-                false
-            }
-        } else if unknown_pattern.len() == 5 {
-            if (&known_patterns[7]).is_subset(unknown_pattern) {
-                (&mut known_patterns[3]).extend(unknown_pattern);
-                false
+        unknown_patterns.retain(|unknown_pattern| {
+            if unknown_pattern.len() == 6 {
+                if (&known_patterns[4]).is_subset(unknown_pattern) {
+                    (&mut known_patterns[9]).extend(unknown_pattern);
+                    false
+                } else if (&known_patterns[7]).is_subset(unknown_pattern) {
+                    (&mut known_patterns[0]).extend(unknown_pattern);
+                    false
+                } else {
+                    (&mut known_patterns[6]).extend(unknown_pattern);
+                    false
+                }
+            } else if unknown_pattern.len() == 5 {
+                if (&known_patterns[7]).is_subset(unknown_pattern) {
+                    (&mut known_patterns[3]).extend(unknown_pattern);
+                    false
+                } else {
+                    true
+                }
             } else {
                 true
             }
-        } else {
-            true
         });
-        
+
         if unknown_patterns[0]
             == (&known_patterns[9])
-            .intersection(&unknown_patterns[0])
-            .copied()
-            .collect::<HashSet<char>>()
+                .intersection(&unknown_patterns[0])
+                .copied()
+                .collect::<HashSet<char>>()
         {
             (&mut known_patterns[5]).extend(&unknown_patterns[0]);
             (&mut known_patterns[2]).extend(&unknown_patterns[1]);

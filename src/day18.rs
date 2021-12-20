@@ -17,14 +17,14 @@ impl Number {
     fn first(&mut self) -> &mut usize {
         match self {
             Pair(l, _) => l.first(),
-            Literal(n) => n
+            Literal(n) => n,
         }
     }
 
     fn last(&mut self) -> &mut usize {
         match self {
             Pair(_, r) => r.last(),
-            Literal(n) => n
+            Literal(n) => n,
         }
     }
 
@@ -39,72 +39,81 @@ impl Number {
                     (split, Box::new(Pair(l, r)))
                 }
             }
-            Literal(n) => if n > 9 {
-                (true, Box::new(Pair(Box::new(Literal(n / 2)), Box::new(Literal((n + 1) / 2)))))
-            } else {
-                (false, Box::new(self))
+            Literal(n) => {
+                if n > 9 {
+                    (
+                        true,
+                        Box::new(Pair(
+                            Box::new(Literal(n / 2)),
+                            Box::new(Literal((n + 1) / 2)),
+                        )),
+                    )
+                } else {
+                    (false, Box::new(self))
+                }
             }
         }
     }
 
-    fn explode(self, depth: usize, mut left_num: Option<&mut usize>, right_num: Option<&mut usize>) -> Box<Number> {
+    fn explode(
+        self,
+        depth: usize,
+        mut left_num: Option<&mut usize>,
+        right_num: Option<&mut usize>,
+    ) -> Box<Number> {
         if depth == 3 {
             match self {
-                Pair(mut l, mut r) => {
-                    match (&mut *l, &mut *r) {
-                        (Pair(ll, lr), Literal(rn)) => {
-                            if let Literal(ll) = **ll {
-                                if let Literal(lr) = **lr {
-                                    if let Some(l) = left_num {
-                                        *l += ll;
-                                    }
-                                    *rn += lr;
-                                    Box::new(Pair(Box::new(LITERAL_0), r))
-                                } else {
-                                    panic!("Impossible pattern")
+                Pair(mut l, mut r) => match (&mut *l, &mut *r) {
+                    (Pair(ll, lr), Literal(rn)) => {
+                        if let Literal(ll) = **ll {
+                            if let Literal(lr) = **lr {
+                                if let Some(l) = left_num {
+                                    *l += ll;
                                 }
+                                *rn += lr;
+                                Box::new(Pair(Box::new(LITERAL_0), r))
                             } else {
                                 panic!("Impossible pattern")
                             }
-                        }
-                        (Literal(ln), Pair(rl, rr)) => {
-                            if let Literal(rl) = **rl {
-                                if let Literal(rr) = **rr {
-                                    *ln += rl;
-                                    if let Some(r) = right_num {
-                                        *r += rr;
-                                    }
-                                    Box::new(Pair(l, Box::new(LITERAL_0)))
-                                } else {
-                                    panic!("Impossible pattern")
-                                }
-                            } else {
-                                panic!("Impossible pattern")
-                            }
-                        }
-                        (Pair(ll, lr), Pair(rl, _)) => {
-                            if let Literal(ll) = **ll {
-                                if let Literal(lr) = **lr {
-                                    if let Some(l) = &mut left_num {
-                                        **l += ll;
-                                    }
-                                    if let Literal(rl) = &mut **rl {
-                                        *rl += lr;
-                                    }
-                                    Pair(Box::new(LITERAL_0), r).explode(depth, left_num, right_num)
-                                } else {
-                                    panic!("Impossible pattern")
-                                }
-                            } else {
-                                panic!("Impossible pattern")
-                            }
-                        }
-                        _ => {
-                            Box::new(Pair(l, r))
+                        } else {
+                            panic!("Impossible pattern")
                         }
                     }
-                }
-                _ => Box::new(self)
+                    (Literal(ln), Pair(rl, rr)) => {
+                        if let Literal(rl) = **rl {
+                            if let Literal(rr) = **rr {
+                                *ln += rl;
+                                if let Some(r) = right_num {
+                                    *r += rr;
+                                }
+                                Box::new(Pair(l, Box::new(LITERAL_0)))
+                            } else {
+                                panic!("Impossible pattern")
+                            }
+                        } else {
+                            panic!("Impossible pattern")
+                        }
+                    }
+                    (Pair(ll, lr), Pair(rl, _)) => {
+                        if let Literal(ll) = **ll {
+                            if let Literal(lr) = **lr {
+                                if let Some(l) = &mut left_num {
+                                    **l += ll;
+                                }
+                                if let Literal(rl) = &mut **rl {
+                                    *rl += lr;
+                                }
+                                Pair(Box::new(LITERAL_0), r).explode(depth, left_num, right_num)
+                            } else {
+                                panic!("Impossible pattern")
+                            }
+                        } else {
+                            panic!("Impossible pattern")
+                        }
+                    }
+                    _ => Box::new(Pair(l, r)),
+                },
+                _ => Box::new(self),
             }
         } else {
             match self {
@@ -114,7 +123,7 @@ impl Number {
                     let r = r.explode(depth + 1, Some(left_num), right_num);
                     Box::new(Pair(Box::new(l), r))
                 }
-                _ => Box::new(self)
+                _ => Box::new(self),
             }
         }
     }
@@ -122,7 +131,7 @@ impl Number {
     fn magnitude(self) -> usize {
         match self {
             Pair(l, r) => 3 * l.magnitude() + 2 * r.magnitude(),
-            Literal(n) => n
+            Literal(n) => n,
         }
     }
 }
@@ -131,7 +140,7 @@ impl Debug for Number {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Pair(l, r) => f.write_fmt(format_args!("[{:?},{:?}]", l, r)),
-            Literal(n) => f.write_fmt(format_args!("{}", n))
+            Literal(n) => f.write_fmt(format_args!("{}", n)),
         }
     }
 }
@@ -149,7 +158,6 @@ pub fn main() -> io::Result<(usize, usize)> {
 
     let mut current = Box::new(LITERAL_0);
     let mut pairs = Vec::new();
-
 
     for line in lines {
         let line = line?;
@@ -189,7 +197,9 @@ fn reduce(current: Box<Number>) -> Box<Number> {
         current = current.explode(0, None, None);
         let (split, new) = current.split();
         current = new;
-        if !split { break; }
+        if !split {
+            break;
+        }
     }
     current
 }

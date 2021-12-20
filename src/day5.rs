@@ -69,11 +69,13 @@ pub fn main() -> io::Result<(usize, usize)> {
     }
 
     let mut map = vec![0; (size_x as usize + 1) * (size_y as usize + 1)];
-    vents.retain(|v| if v.x1 == v.x2 || v.y1 == v.y2 {
-        v.add_points(&mut map, size_x);
-        false
-    } else {
-        true
+    vents.retain(|v| {
+        if v.x1 == v.x2 || v.y1 == v.y2 {
+            v.add_points(&mut map, size_x);
+            false
+        } else {
+            true
+        }
     });
     let solution_a = map.iter().filter(|x| **x > 1).count();
     vents.iter().for_each(|v| v.add_points(&mut map, size_x));

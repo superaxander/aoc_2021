@@ -31,12 +31,15 @@ pub fn main() -> io::Result<(usize, usize)> {
 
     for time in 0..usize::MAX {
         map.iter_mut().for_each(|energy| *energy += 1);
-        
+
         flashed.clear();
-        flashed.extend(map
-            .iter()
-            .enumerate()
-            .filter_map(|(i, energy)| if *energy == 10 { Some(i) } else { None }));
+        flashed.extend(map.iter().enumerate().filter_map(|(i, energy)| {
+            if *energy == 10 {
+                Some(i)
+            } else {
+                None
+            }
+        }));
         while !flashed.is_empty() {
             if time < 100 {
                 count += flashed.len();
@@ -56,10 +59,13 @@ pub fn main() -> io::Result<(usize, usize)> {
                 increment(&mut map, x + 1, y + 1, size_x, size_y);
             }
             flashed.clear();
-            flashed.extend(map
-                .iter()
-                .enumerate()
-                .filter_map(|(i, energy)| if *energy == 10 { Some(i) } else { None }));
+            flashed.extend(map.iter().enumerate().filter_map(|(i, energy)| {
+                if *energy == 10 {
+                    Some(i)
+                } else {
+                    None
+                }
+            }));
         }
 
         let mut amount = 0;

@@ -23,7 +23,7 @@ pub fn main() -> io::Result<(i64, i64)> {
     }
 
     // Find x velocity
-    let min_x_velocity = (2f64*min_x as f64).sqrt() as i64;
+    let min_x_velocity = (2f64 * min_x as f64).sqrt() as i64;
 
     let mut solution_b = 0;
 
