@@ -42,16 +42,7 @@ pub fn main() -> io::Result<(usize, usize)> {
                 let mut possible_positions = HashMap::new();
                 for a in &scanners[i] {
                     for b in &scanners[j] {
-                        for p in shifts(b, a) {
-                            let (d, c) = p;
-                            assert_eq!(
-                                shift_back(b, &c, &d),
-                                *a,
-                                "Testing {:?}, {:?}, with {:?}",
-                                c,
-                                b,
-                                d
-                            );
+                        for p in shifts(*b, *a) {
                             match possible_positions.entry(p) {
                                 Entry::Occupied(mut e) => {
                                     *(e.get_mut()) += 1;
@@ -63,16 +54,17 @@ pub fn main() -> io::Result<(usize, usize)> {
                         }
                     }
                 }
+
                 let possible_positions = possible_positions
                     .iter()
                     .filter(|(_, i)| **i >= 12)
                     .collect::<Vec<(&((usize, usize), Coordinate), &usize)>>();
-                assert!(possible_positions.len() <= 1);
+
                 if let Some(((flip_type, p), _)) = possible_positions.first() {
                     let mut scanner = scanners[i].clone();
 
                     for beacon in &scanners[j] {
-                        let shifted_beacon = shift_back(beacon, p, flip_type);
+                        let shifted_beacon = shift_back(*beacon, *p, *flip_type);
                         scanner.insert(shifted_beacon);
                     }
                     scanners.remove(j);
@@ -80,7 +72,7 @@ pub fn main() -> io::Result<(usize, usize)> {
                     scanners.push(scanner);
                     let j_centers = centers.remove(j);
                     let mut i_centers = centers.remove(i);
-                    i_centers.extend(j_centers.iter().map(|c| shift_back(c, p, flip_type)));
+                    i_centers.extend(j_centers.iter().map(|c| shift_back(*c, *p, *flip_type)));
                     centers.push(i_centers);
                     break 'outer;
                 }
@@ -106,100 +98,51 @@ fn manhattan(b1: Coordinate, b2: Coordinate) -> usize {
     (b1.0.abs_diff(b2.0) + b1.1.abs_diff(b2.1) + b1.2.abs_diff(b2.2)) as usize
 }
 
-const POSSIBLE_FLIPS: [(bool, bool, bool); 7] = [
-    (false, false, false),
-    (false, false, true),
-    (false, true, false),
-    (true, false, false),
-    (true, false, true),
-    (true, true, false),
-    (true, true, true),
-];
-
-fn shift(b1: &Coordinate, b2: &Coordinate, flip_type: &(usize, usize)) -> Coordinate {
-    let flips = POSSIBLE_FLIPS[flip_type.0];
-    match flip_type.1 {
-        0 => (
-            if flips.0 { b2.0 + b1.0 } else { b2.0 - b1.0 },
-            if flips.1 { b2.1 + b1.1 } else { b2.1 - b1.1 },
-            if flips.2 { b2.2 + b1.2 } else { b2.2 - b1.2 },
-        ),
-        1 => (
-            if flips.0 { b2.0 + b1.0 } else { b2.0 - b1.0 },
-            if flips.1 { b2.2 + b1.1 } else { b2.2 - b1.1 },
-            if flips.2 { b2.1 + b1.2 } else { b2.1 - b1.2 },
-        ),
-        2 => (
-            if flips.0 { b2.1 + b1.0 } else { b2.1 - b1.0 },
-            if flips.1 { b2.0 + b1.1 } else { b2.0 - b1.1 },
-            if flips.2 { b2.2 + b1.2 } else { b2.2 - b1.2 },
-        ),
-        3 => (
-            if flips.0 { b2.1 + b1.0 } else { b2.1 - b1.0 },
-            if flips.1 { b2.2 + b1.1 } else { b2.2 - b1.1 },
-            if flips.2 { b2.0 + b1.2 } else { b2.0 - b1.2 },
-        ),
-        4 => (
-            if flips.0 { b2.2 + b1.0 } else { b2.2 - b1.0 },
-            if flips.1 { b2.1 + b1.1 } else { b2.1 - b1.1 },
-            if flips.2 { b2.0 + b1.2 } else { b2.0 - b1.2 },
-        ),
-        5 => (
-            if flips.0 { b2.2 + b1.0 } else { b2.2 - b1.0 },
-            if flips.1 { b2.0 + b1.1 } else { b2.0 - b1.1 },
-            if flips.2 { b2.1 + b1.2 } else { b2.1 - b1.2 },
-        ),
-        _ => panic!("Wrong value"),
+fn orient_up(b1: Coordinate, up: usize) -> Coordinate {
+    match up {
+        0 => b1,
+        1 => (b1.0, -b1.1, -b1.2),
+        2 => (b1.0, -b1.2, b1.1),
+        3 => (-b1.1, -b1.2, b1.0),
+        4 => (-b1.0, -b1.2, -b1.1),
+        5 => (b1.1, -b1.2, -b1.0),
+        _ => panic!("Invalid orientation value"),
     }
 }
 
-fn shift_back(b1: &Coordinate, b2: &Coordinate, flip_type: &(usize, usize)) -> Coordinate {
-    let flips = POSSIBLE_FLIPS[flip_type.0];
-    match flip_type.1 {
-        0 => (
-            if flips.0 { b2.0 - b1.0 } else { b2.0 + b1.0 },
-            if flips.1 { b2.1 - b1.1 } else { b1.1 + b2.1 },
-            if flips.2 { b2.2 - b1.2 } else { b2.2 + b1.2 },
-        ),
-        1 => (
-            if flips.0 { b2.0 - b1.0 } else { b2.0 + b1.0 },
-            if flips.2 { b2.2 - b1.2 } else { b2.2 + b1.2 },
-            if flips.1 { b2.1 - b1.1 } else { b2.1 + b1.1 },
-        ),
-        2 => (
-            if flips.1 { b2.1 - b1.1 } else { b2.1 + b1.1 },
-            if flips.0 { b2.0 - b1.0 } else { b2.0 + b1.0 },
-            if flips.2 { b2.2 - b1.2 } else { b2.2 + b1.2 },
-        ),
-        3 => (
-            if flips.2 { b2.2 - b1.2 } else { b2.2 + b1.2 },
-            if flips.0 { b2.0 - b1.0 } else { b2.0 + b1.0 },
-            if flips.1 { b2.1 - b1.1 } else { b2.1 + b1.1 },
-        ),
-        4 => (
-            if flips.2 { b2.2 - b1.2 } else { b2.2 + b1.2 },
-            if flips.1 { b2.1 - b1.1 } else { b1.1 + b2.1 },
-            if flips.0 { b2.0 - b1.0 } else { b2.0 + b1.0 },
-        ),
-        5 => (
-            if flips.1 { b2.1 - b1.1 } else { b2.1 + b1.1 },
-            if flips.2 { b2.2 - b1.2 } else { b2.2 + b1.2 },
-            if flips.0 { b2.0 - b1.0 } else { b2.0 + b1.0 },
-        ),
-        _ => panic!("Wrong value"),
+fn rotate(b1: Coordinate, rotation: usize) -> Coordinate {
+    match rotation {
+        0 => b1,
+        1 => (-b1.1, b1.0, b1.2),
+        2 => (-b1.0, -b1.1, b1.2),
+        3 => (b1.1, -b1.0, b1.2),
+        _ => panic!("Invalid rotation value"),
     }
 }
 
-fn shifts(b1: &Coordinate, b2: &Coordinate) -> Vec<((usize, usize), Coordinate)> {
+fn shift(b1: Coordinate, b2: Coordinate, flip_type: (usize, usize)) -> Coordinate {
+    add(flip(rotate(orient_up(b1, flip_type.0), flip_type.1)), b2)
+}
+
+fn shift_back(b1: Coordinate, b2: Coordinate, flip_type: (usize, usize)) -> Coordinate {
+    add(rotate(orient_up(b1, flip_type.0), flip_type.1), b2)
+}
+
+fn add(b1: Coordinate, b2: Coordinate) -> Coordinate {
+    (b1.0 + b2.0, b1.1 + b2.1, b1.2 + b2.2)
+}
+
+fn shifts(b1: Coordinate, b2: Coordinate) -> Vec<((usize, usize), Coordinate)> {
     let mut shifts = Vec::new();
-    for i in 0..POSSIBLE_FLIPS.len() {
-        shifts.push(((i, 0), shift(b1, b2, &(i, 0))));
-        shifts.push(((i, 1), shift(b1, b2, &(i, 1))));
-        shifts.push(((i, 2), shift(b1, b2, &(i, 2))));
-        shifts.push(((i, 3), shift(b1, b2, &(i, 3))));
-        shifts.push(((i, 4), shift(b1, b2, &(i, 4))));
-        shifts.push(((i, 5), shift(b1, b2, &(i, 5))));
+    for i in 0..6 {
+        for j in 0..4 {
+            shifts.push(((i, j), shift(b1, b2, (i, j))));
+        }
     }
 
     shifts
+}
+
+fn flip(b1: Coordinate) -> Coordinate {
+    (-b1.0, -b1.1, -b1.2)
 }
