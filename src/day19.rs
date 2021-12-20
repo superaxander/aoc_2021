@@ -39,16 +39,17 @@ pub fn main() -> io::Result<(usize, usize)> {
         'outer: for i in 0..scanners.len() {
             for j in i + 1..scanners.len() {
                 // Loop through possible scanner positions
-                let mut possible_positions = HashMap::new();
+                let mut possible_positions: HashMap<Coordinate, (usize, (usize, usize))> =
+                    HashMap::new();
                 for a in &scanners[i] {
                     for b in &scanners[j] {
-                        for p in shifts(*b, *a) {
+                        for (orientation, p) in shifts(*b, *a) {
                             match possible_positions.entry(p) {
                                 Entry::Occupied(mut e) => {
-                                    *(e.get_mut()) += 1;
+                                    (*(e.get_mut())).0 += 1;
                                 }
                                 Entry::Vacant(e) => {
-                                    e.insert(1);
+                                    e.insert((1, orientation));
                                 }
                             }
                         }
@@ -57,14 +58,14 @@ pub fn main() -> io::Result<(usize, usize)> {
 
                 let possible_positions = possible_positions
                     .iter()
-                    .filter(|(_, i)| **i >= 12)
-                    .collect::<Vec<(&((usize, usize), Coordinate), &usize)>>();
+                    .filter(|(_, (i, _))| *i >= 12)
+                    .collect::<Vec<(&Coordinate, &(usize, (usize, usize)))>>();
 
-                if let Some(((flip_type, p), _)) = possible_positions.first() {
+                if let Some((p, (_, flip_type))) = possible_positions.first() {
                     let mut scanner = scanners[i].clone();
 
                     for beacon in &scanners[j] {
-                        let shifted_beacon = shift_back(*beacon, *p, *flip_type);
+                        let shifted_beacon = shift_back(*beacon, **p, *flip_type);
                         scanner.insert(shifted_beacon);
                     }
                     scanners.remove(j);
@@ -72,7 +73,7 @@ pub fn main() -> io::Result<(usize, usize)> {
                     scanners.push(scanner);
                     let j_centers = centers.remove(j);
                     let mut i_centers = centers.remove(i);
-                    i_centers.extend(j_centers.iter().map(|c| shift_back(*c, *p, *flip_type)));
+                    i_centers.extend(j_centers.iter().map(|c| shift_back(*c, **p, *flip_type)));
                     centers.push(i_centers);
                     break 'outer;
                 }
