@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::io;
 
 use crate::common;
@@ -42,10 +41,10 @@ pub fn main() -> io::Result<(usize, usize)> {
         }
     }
 
-    let mut map = HashSet::new();
+    let mut map = Vec::new();
 
-    let mut size_x: i64 = 0;
-    let mut y: i64 = 0;
+    let mut size_x = 0;
+    let mut size_y = 100;
 
     for line in lines {
         let line = line?;
@@ -55,69 +54,82 @@ pub fn main() -> io::Result<(usize, usize)> {
             continue;
         }
 
-        size_x = line.len() as i64;
+        size_x = line.len() + 100;
 
-        for (x, c) in line.chars().enumerate() {
-            if c == '#' {
-                map.insert((x as i64, y));
-            }
+        if size_y == 100 {
+            map.extend(vec![false; size_x * 50])
         }
-        y += 1;
+
+        map.extend([false; 50]);
+
+        for c in line.chars() {
+            map.push(c == '#');
+        }
+
+        map.extend([false; 50]);
+        size_y += 1;
     }
 
-    let mut min_x = -1;
-    let mut min_y = -1;
-
-    size_x += 1;
-    let mut size_y = y + 1;
+    map.extend(vec![false; size_x * 50]);
 
     let do_flip = get_bit!(algorithm, 0) > 0 && get_bit!(algorithm, 511) == 0;
     let mut flip = false;
 
     let mut solution_a = 0;
 
-    for iteration in 0..50 {
-        let mut copy = map.clone();
+    let size_x = size_x as i64;
+    let size_y = size_y as i64;
 
-        for i in min_x..=size_x {
-            for j in min_y..=size_y {
+    let mut bound_min_x = 49;
+    let mut bound_max_x = size_x - 49;
+
+    let mut bound_min_y = 49;
+    let mut bound_max_y = size_y - 49;
+
+    let mut copy = map.clone();
+
+    for iteration in 0..50 {
+        for i in bound_min_x..bound_max_x {
+            for j in bound_min_y..bound_max_y {
                 let mut num = 0;
                 for k in -1..=1 {
                     for l in -1..=1 {
                         num <<= 1;
-                        if map.contains(&(i + l, j + k))
-                            || (flip
-                                && do_flip
-                                && (i + l <= min_x
-                                    || j + k <= min_y
-                                    || i + l >= size_x
-                                    || j + k >= size_y))
+
+                        if i + l <= bound_min_x
+                            || j + k <= bound_min_y
+                            || i + l >= bound_max_x - 1
+                            || j + k >= bound_max_y - 1
                         {
+                            if flip {
+                                num |= 1;
+                            }
+                        } else if map[(i + l + (j + k) * size_x) as usize] {
                             num |= 1;
                         }
                     }
                 }
 
                 if get_bit!(algorithm, num) > 0 {
-                    copy.insert((i, j));
+                    copy[(i + j * size_x) as usize] = true;
                 } else {
-                    copy.remove(&(i, j));
+                    copy[(i + j * size_x) as usize] = false;
                 }
             }
         }
 
-        min_x -= 1;
-        min_y -= 1;
-        size_x += 1;
-        size_y += 1;
+        bound_min_x -= 1;
+        bound_min_y -= 1;
+        bound_max_x += 1;
+        bound_max_y += 1;
 
-        map = copy;
-        flip = !flip;
+        map.copy_from_slice(&copy);
+        flip ^= do_flip;
 
         if iteration == 1 {
-            solution_a = map.len();
+            solution_a = map.iter().filter(|b| **b).count();
         }
     }
 
-    Ok((solution_a, map.len()))
+    Ok((solution_a, map.iter().filter(|b| **b).count()))
 }
