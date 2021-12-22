@@ -81,7 +81,10 @@ pub fn main(do_b: bool) -> io::Result<usize> {
         }
 
         loop {
-            let roll = roll!(die_state) + roll!(die_state) + roll!(die_state);
+            let roll_1 = roll!(die_state);
+            let roll_2 = roll!(die_state);
+            let roll_3 = roll!(die_state);
+            let roll = roll_1 + roll_2 + roll_3;
             player_1_pos = (player_1_pos + roll) % 10;
             player_1_score += player_1_pos + 1;
 
@@ -89,7 +92,10 @@ pub fn main(do_b: bool) -> io::Result<usize> {
                 break;
             }
 
-            let roll = roll!(die_state) + roll!(die_state) + roll!(die_state);
+            let roll_1 = roll!(die_state);
+            let roll_2 = roll!(die_state);
+            let roll_3 = roll!(die_state);
+            let roll = roll_1 + roll_2 + roll_3;
             player_2_pos = (player_2_pos + roll) % 10;
             player_2_score += player_2_pos + 1;
 

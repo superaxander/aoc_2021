@@ -28,6 +28,7 @@ mod day19;
 mod day2;
 mod day20;
 mod day21;
+mod day22;
 mod day3;
 mod day4;
 mod day5;
@@ -60,5 +61,6 @@ fn main() {
     Day::CombinedUsize(day19::main).run("day 19");
     Day::CombinedUsize(day20::main).run("day 20");
     Day::SeparatedUsize(day21::main).run("day 21");
+    Day::SeparatedUsize(day22::main).run("day 22");
     info!("All days together took {:#?}", now.elapsed());
 }
